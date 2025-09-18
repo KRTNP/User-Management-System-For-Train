@@ -57,26 +57,39 @@ npm install
 ```
 
 ### 2. Database Configuration
-```sql
--- Create database using MySQL command line or administration tool
-CREATE DATABASE `krtn-data`;
-
--- Optional: Create dedicated user account
-CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON `krtn-data`.* TO 'your_username'@'localhost';
-FLUSH PRIVILEGES;
+```bash
+npm run db:init
 ```
 
 ### 3. Configure Database Connection
-Update the database credentials in `config/db.js`:
-```javascript
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'your_username',     // Update credentials
-  password: 'your_password', // Update credentials
-  database: 'krtn-data',     // Update if needed
-  // ... additional configuration
-});
+Update the database credentials in `.env`:
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password_here
+DB_NAME=user_management
+DB_CONNECTION_LIMIT=10
+DB_QUEUE_LIMIT=0
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Security Configuration
+JWT_SECRET=your_jwt_secret_here_change_in_production
+JWT_EXPIRATION=1h
+
+# CORS Configuration
+CORS_ORIGIN=*
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Logging Configuration
+LOG_LEVEL=info
+LOG_FILE=app.log
 ```
 
 ### 4. Start the Application
@@ -84,17 +97,6 @@ const pool = mysql.createPool({
 npm start
 # or
 node server.js
-```
-
-Expected output:
-```
-Starting User Management System...
-Initializing database...
-Users table created successfully
-Created sample user: admin (admin)
-Created sample user: john_doe (user)
-Created sample user: jane_smith (user)
-Server running at http://localhost:3000
 ```
 
 ## Usage
@@ -193,17 +195,6 @@ user-management-system/
 - **Transaction Support**: Database consistency
 - **Query Optimization**: Indexed columns for performance
 
-## Configuration
-
-### Environment Variables
-Configure the following environment variables for production deployment:
-- `DB_HOST` - Database host address
-- `DB_USER` - Database username
-- `DB_PASSWORD` - Database password
-- `DB_NAME` - Database name
-- `PORT` - Application port
-- `CORS_ORIGIN` - CORS allowed origins
-
 ### Security Configuration
 - Update JWT secret in `config/default.js`
 - Configure rate limiting in `server.js`
@@ -261,11 +252,6 @@ curl -X POST http://localhost:3000/api/auth/login \
 - [ ] Configure backup procedures
 - [ ] Review security configurations
 
-### Recommended Platforms
-- **Cloud Providers**: AWS, Google Cloud, Azure
-- **Platform as a Service**: Heroku, DigitalOcean App Platform
-- **Container Platforms**: Docker, Kubernetes
-
 ## Support & Maintenance
 
 ### Documentation
@@ -281,7 +267,3 @@ curl -X POST http://localhost:3000/api/auth/login \
 ## License
 
 This project is intended for educational and reference purposes. Review and adapt the code according to your specific requirements and security standards.
-
-## Professional Development
-
-This codebase demonstrates enterprise-level patterns and practices suitable for production environments. Study the implementation details to understand professional Node.js application development.
