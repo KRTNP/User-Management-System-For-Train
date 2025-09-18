@@ -271,7 +271,7 @@ async function saveProfile() {
     }
 
     try {
-        const response = await fetchWithAuth(`/api/users/${currentUser.id}`, {
+        const response = await fetchWithAuth(`/api/auth/me`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(profileData)

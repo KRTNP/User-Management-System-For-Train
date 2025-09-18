@@ -218,4 +218,100 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * Update User Profile
+ * PUT /api/auth/me
+ *
+ * Allows authenticated users to update their own profile information.
+ * Users can only update their own profile, not other users' profiles.
+ *
+ * @param {string} username - New username (optional)
+ * @param {string} email - New email address (optional)
+ * @header {string} Authorization - Bearer JWT token
+ * @returns {Object} Updated user profile data
+ */
+router.put('/me', [
+  authenticateToken,
+  // Input validation
+  check('username', 'Username must be at least 3 characters').optional().isLength({ min: 3 }),
+  check('email', 'Please provide a valid email').optional().isEmail()
+], async (req, res) => {
+  try {
+    // Check validation results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: 'Invalid input data',
+        errors: errors.array()
+      });
+    }
+
+    const userId = req.user.id;
+    const { username, email } = req.body;
+
+    // Check if the user exists
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if username is being changed and if it's already taken
+    if (username && username !== existingUser.username) {
+      const userWithUsername = await User.findByUsername(username);
+      if (userWithUsername && userWithUsername.id !== userId) {
+        return res.status(400).json({
+          message: 'Username already taken',
+          field: 'username'
+        });
+      }
+    }
+
+    // Check if email is being changed and if it's already taken
+    if (email && email !== existingUser.email) {
+      const userWithEmail = await User.findByEmail(email);
+      if (userWithEmail && userWithEmail.id !== userId) {
+        return res.status(400).json({
+          message: 'Email already registered',
+          field: 'email'
+        });
+      }
+    }
+
+    // Update the user profile
+    const updatedUser = await User.updateUser(userId, {
+      username: username || existingUser.username,
+      email: email || existingUser.email,
+      role: existingUser.role // Keep the same role
+    });
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: updatedUser.toJSON()
+    });
+
+  } catch (error) {
+    console.error('Error updating user profile:', error.message);
+
+    // Handle database constraint violations
+    if (error.code === 'ER_DUP_ENTRY') {
+      if (error.sqlMessage.includes('username')) {
+        return res.status(400).json({
+          message: 'Username already exists',
+          field: 'username'
+        });
+      } else if (error.sqlMessage.includes('email')) {
+        return res.status(400).json({
+          message: 'Email already exists',
+          field: 'email'
+        });
+      }
+    }
+
+    res.status(500).json({
+      message: 'Could not update profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
 module.exports = router;
