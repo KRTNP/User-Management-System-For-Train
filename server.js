@@ -44,6 +44,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
       scriptSrc: ["'self'"],
+      scriptSrcAttr: ["'unsafe-inline'"], // Allow inline event handlers temporarily
       imgSrc: ["'self'", "data:", "https:"],
       fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],
       // Remove upgrade-insecure-requests for local development
@@ -93,7 +94,7 @@ app.use("/api/users", userRoutes); // User management endpoints
  * GET /api
  * Returns API status and available endpoints
  */
-app.get("/api", (req, res) => {
+app.get("/api", (_req, res) => {
   res.json({
     message: "User Management API is operational",
     version: "1.0.0",
@@ -113,7 +114,7 @@ app.get("/api", (req, res) => {
  * Provides system statistics for administrative dashboard
  * Note: In production, this should be protected with authentication
  */
-app.get("/api/dashboard", async (req, res) => {
+app.get("/api/dashboard", async (_req, res) => {
   try {
     const users = await User.getAllUsers();
 
@@ -154,7 +155,7 @@ app.get("/api/dashboard", async (req, res) => {
  * Global Error Handler
  * Catches and handles all unhandled errors in the application
  */
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   console.error('Server Error:', err.stack);
 
   // Handle specific error types
@@ -177,7 +178,7 @@ app.use((err, req, res, next) => {
  * Serves the main HTML file for any unmatched routes
  * Enables Single Page Application (SPA) routing
  */
-app.use((req, res) => {
+app.use((_req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 

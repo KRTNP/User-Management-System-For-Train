@@ -112,16 +112,22 @@ router.post('/', [
   const { username, email, password, role } = req.body;
 
   try {
-    // Check if username already exists
+    // Check if username already exists (case-insensitive)
     const existingUserByUsername = await User.findByUsername(username);
     if (existingUserByUsername) {
-      return res.status(400).json({ message: 'Username already taken' });
+      return res.status(400).json({
+        message: 'Username already taken',
+        field: 'username'
+      });
     }
 
-    // Check if email already exists
+    // Check if email already exists (case-insensitive)
     const existingUserByEmail = await User.findByEmail(email);
     if (existingUserByEmail) {
-      return res.status(400).json({ message: 'Email already registered' });
+      return res.status(400).json({
+        message: 'Email already registered',
+        field: 'email'
+      });
     }
 
     // Create the new user (password hashing handled automatically)
@@ -140,7 +146,26 @@ router.post('/', [
 
   } catch (error) {
     console.error('Error creating user:', error.message);
-    res.status(500).json({ message: 'Could not create user' });
+
+    // Handle database constraint violations specifically
+    if (error.code === 'ER_DUP_ENTRY') {
+      if (error.sqlMessage.includes('username')) {
+        return res.status(400).json({
+          message: 'Username already exists',
+          field: 'username'
+        });
+      } else if (error.sqlMessage.includes('email')) {
+        return res.status(400).json({
+          message: 'Email already exists',
+          field: 'email'
+        });
+      }
+    }
+
+    res.status(500).json({
+      message: 'Could not create user',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
   }
 });
 

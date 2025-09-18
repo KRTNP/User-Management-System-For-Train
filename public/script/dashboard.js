@@ -360,10 +360,10 @@ async function fetchWithAuth(url, options = {}) {
     }
 
     const defaultOptions = {
-        // headers: {
-        //     'x-auth-token': token,
-        //     'Content-Type': 'application/json'
-        // }
+        headers: {
+            'x-auth-token': token,
+            'Content-Type': 'application/json'
+        }
     };
 
     const mergedOptions = {

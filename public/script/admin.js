@@ -159,16 +159,28 @@ function createUserRow(user) {
             ${createdDate}
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-            <button onclick="editUser(${user.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
+            <button data-action="edit" data-user-id="${user.id}" class="text-indigo-600 hover:text-indigo-900 mr-3">
                 <i class="fas fa-edit"></i> Edit
             </button>
             ${user.id !== currentUser.id ? `
-                <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-900">
+                <button data-action="delete" data-user-id="${user.id}" class="text-red-600 hover:text-red-900">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             ` : '<span class="text-gray-400">Current User</span>'}
         </td>
     `;
+
+    // Add event listeners to buttons
+    const editBtn = row.querySelector('[data-action="edit"]');
+    const deleteBtn = row.querySelector('[data-action="delete"]');
+
+    if (editBtn) {
+        editBtn.addEventListener('click', () => editUser(user.id));
+    }
+
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => deleteUser(user.id));
+    }
 
     return row;
 }
@@ -444,10 +456,10 @@ async function fetchWithAuth(url, options = {}) {
     }
 
     const defaultOptions = {
-        // headers: {
-        //     'x-auth-token': token,
-        //     'Content-Type': 'application/json'
-        // }
+        headers: {
+            'x-auth-token': token,
+            'Content-Type': 'application/json'
+        }
     };
 
     const mergedOptions = {
