@@ -33,6 +33,12 @@ function getCurrentPage(path) {
 function handleAuthenticationRouting(currentPage) {
   const token = localStorage.getItem('token');
 
+  // Skip authentication routing for dashboard pages - they handle their own auth
+  if (currentPage === 'admin-dashboard' || currentPage === 'user-dashboard') {
+    console.log('Auth routing: skipping for dashboard page, letting dashboard handle its own auth');
+    return;
+  }
+
   if (token) {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -56,19 +62,6 @@ function handleAuthenticationRouting(currentPage) {
             redirectToDashboard(user.role);
             break;
 
-          case 'admin-dashboard':
-            // Admin dashboard access control
-            if (user.role !== 'admin') {
-              showAlert('Access denied. Admin privileges required.', 'error');
-              redirectToDashboard(user.role);
-            }
-            break;
-
-          case 'user-dashboard':
-            // User dashboard is accessible to all authenticated users
-            console.log('Auth routing: user on dashboard page, access granted');
-            break;
-
           default:
             // Unknown page, redirect to appropriate dashboard
             redirectToDashboard(user.role);
@@ -85,10 +78,8 @@ function handleAuthenticationRouting(currentPage) {
       redirectToLogin();
     }
   } else {
-    // No token - check if on protected page
-    if (currentPage === 'admin-dashboard' || currentPage === 'user-dashboard') {
-      redirectToLogin();
-    }
+    // No token - only redirect if on a page that requires auth but doesn't handle it itself
+    console.log('Auth routing: no token found, staying on current page');
   }
 }
 
