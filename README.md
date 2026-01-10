@@ -1,269 +1,99 @@
-# User Management System
+# Identity & Access Management (IAM) System
 
-A comprehensive Node.js application demonstrating enterprise-level user management with authentication, authorization, and administrative functionality.
+A lightweight, secure, and role-based user management platform built with Node.js and MySQL. This project demonstrates a "bare-metal" implementation of authentication flows and access control without relying on high-level auth-as-a-service providers.
 
-## Purpose
+## Overview
 
-This application serves as a reference implementation for:
-- Node.js and Express.js server architecture
-- MySQL database integration and management
-- JWT-based authentication and authorization
-- RESTful API design principles
-- Security best practices implementation
-- Professional web application development
+This application serves as a foundational implementation of a secure Identity Provider (IdP). It handles user lifecycle management, secure credential storage, and session validation using JSON Web Tokens (JWT). The system is designed to distinguish between standard users and administrators, enforcing Role-Based Access Control (RBAC) at the middleware level.
 
-## Features
+**Design Philosophy:**
+Instead of using heavy full-stack frameworks, this project utilizes a "No-Magic" architecture—coupling a vanilla JavaScript/Tailwind frontend with a raw Express.js backend—to maintain complete control over the request/response cycle and state management.
 
-### Backend Services
-- **User Registration**: Secure account creation with validation
-- **Authentication**: JWT-based login system
-- **Authorization**: Role-based access control (RBAC)
-- **User Management**: Complete CRUD operations
-- **Security**: Password hashing, rate limiting, security headers
-- **Input Validation**: Comprehensive server-side validation
-- **Error Handling**: Structured error management
-- **Database Management**: Connection pooling and optimization
+## Key Technical Features
 
-### Web Interface
-- **User Registration**: Account creation interface
-- **Authentication**: Secure login functionality
-- **User Dashboard**: Profile management interface
-- **Administrative Panel**: User management for administrators
-- **Responsive Design**: Cross-platform compatibility
+* **Secure Authentication Engine:** Implements industry-standard security practices including password hashing (Bcrypt) and stateless session management (JWT).
+* **Role-Based Access Control (RBAC):** Features distinct access levels (User vs. Admin) enforced via custom Express middleware, ensuring robust API endpoint protection.
+* **RESTful API Architecture:** Exposes a structured API for registration, authentication, and user management, adhering to HTTP status code standards and REST principles.
+* **Database Integration:** Utilizes a connection pool pattern with MySQL for efficient query execution and scalability.
+* **Responsive Interface:** A client-side rendered UI built with Tailwind CSS and Vanilla JavaScript, demonstrating asynchronous communication with the backend API.
 
-### Database Architecture
-- **MySQL Database**: Production-ready database implementation
-- **Connection Pooling**: Optimized database connections
-- **Sample Data**: Development and testing datasets
-- **Schema Management**: Automated database initialization
+## Technology Stack
 
-## Prerequisites
+**Backend**
+![Node.js](https://img.shields.io/badge/-Node.js-339933?style=flat&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/-Express-000000?style=flat&logo=express&logoColor=white)
+![MySQL](https://img.shields.io/badge/-MySQL-4479A1?style=flat&logo=mysql&logoColor=white)
+![JWT](https://img.shields.io/badge/-JWT-000000?style=flat&logo=jsonwebtokens&logoColor=white)
 
-Before running this application, ensure you have:
+**Frontend**
+![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![Tailwind CSS](https://img.shields.io/badge/-Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+![HTML5](https://img.shields.io/badge/-HTML5-E34F26?style=flat&logo=html5&logoColor=white)
 
-1. **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
-2. **MySQL** (v5.7 or higher) - [Download](https://dev.mysql.com/downloads/)
-3. **Basic understanding of**:
-   - JavaScript programming
-   - SQL databases
-   - Command line interface
-   - Web development concepts
+## System Architecture
 
-## Installation & Setup
+The project follows a modified MVC (Model-View-Controller) pattern:
 
-### 1. Install Dependencies
-```bash
-npm install
-```
+1.  **API Layer (Routes/Controllers):** Handles HTTP requests, input validation, and route dispatching.
+2.  **Service Layer (Middleware):** Manages authentication verification (`auth.js`) and authorization logic.
+3.  **Data Layer (MySQL):** Direct SQL interactions via `mysql2` driver for maximum performance and control.
 
-### 2. Database Configuration
-```bash
-npm run db:init
-```
+## Getting Started
 
-### 3. Configure Database Connection
-Update the database credentials in `.env`:
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password_here
-DB_NAME=user_management
-DB_CONNECTION_LIMIT=10
-DB_QUEUE_LIMIT=0
+### Prerequisites
+* Node.js (v16+)
+* MySQL Server
 
-# Server Configuration
-PORT=3000
-NODE_ENV=development
+### Installation
 
-# Security Configuration
-JWT_SECRET=your_jwt_secret_here_change_in_production
-JWT_EXPIRATION=1h
+1.  **Clone the repository**
+    ```bash
+    git clone [https://github.com/yourusername/iam-system-core.git](https://github.com/yourusername/iam-system-core.git)
+    cd iam-system-core
+    ```
 
-# CORS Configuration
-CORS_ORIGIN=*
+2.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-# Rate Limiting
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
+3.  **Database Configuration**
+    Create a database named `train_booking` (or update config) and import the schema:
+    ```bash
+    # Run the initialization script
+    node config/db-init.js
+    ```
+    *Alternatively, manually execute the SQL commands found in `config/db-init.js` in your MySQL client.*
 
-# Logging Configuration
-LOG_LEVEL=info
-LOG_FILE=app.log
-```
+4.  **Environment Setup**
+    Create a `.env` file based on `.env.example`:
+    ```env
+    DB_HOST=localhost
+    DB_USER=root
+    DB_PASSWORD=your_password
+    DB_NAME=train_booking
+    JWT_SECRET=your_secure_secret_key
+    PORT=3000
+    ```
 
-### 4. Start the Application
-```bash
-npm start
-# or
-node server.js
-```
+5.  **Run the Application**
+    ```bash
+    # Development mode with auto-reload
+    npm run dev
+    
+    # Production start
+    npm start
+    ```
+    Access the application at `http://localhost:3000`.
 
-## Usage
+## API Endpoints
 
-### Application Access
-Navigate to: `http://localhost:3000`
-
-### Test Credentials
-Pre-configured accounts for development and testing:
-
-**Administrator Account:**
-- Username: `admin`
-- Password: `admin123`
-- Privileges: Full system access
-
-**Standard User Account:**
-- Username: `john_doe`
-- Password: `password123`
-- Privileges: Limited user access
-
-### API Endpoints
-
-#### Authentication Services
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User authentication
-- `GET /api/auth/me` - Profile retrieval
-
-#### User Management (Administrative)
-- `GET /api/users` - Retrieve all users
-- `GET /api/users/:id` - Retrieve specific user
-- `POST /api/users` - Create new user
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user
-
-#### System Services
-- `GET /api` - Health check
-- `GET /api/dashboard` - System statistics
-
-## Project Structure
-
-```
-user-management-system/
-├── config/
-│   ├── db.js           # Database connection configuration
-│   ├── db-init.js      # Database initialization and sample data
-│   └── default.js      # Application configuration (JWT secrets, etc.)
-├── middleware/
-│   └── auth.js         # Authentication middleware
-├── models/
-│   └── User.js         # User data model and database operations
-├── routes/
-│   ├── auth.js         # Authentication routes
-│   └── users.js        # User management routes
-├── public/
-│   ├── index.html      # Main web page
-│   ├── script/
-│   │   └── script.js   # Frontend JavaScript
-│   └── css/
-│       └── style.css   # Styling
-├── package.json        # Project dependencies and scripts
-├── server.js           # Main server file
-└── README.md          # Documentation
-```
-
-## Architecture Overview
-
-### Core Components
-
-1. **Server Entry Point** (`server.js`) - Application bootstrap and middleware configuration
-2. **User Model** (`models/User.js`) - Data layer and business logic
-3. **Route Handlers** (`routes/`) - HTTP request processing and response logic
-4. **Database Layer** (`config/`) - Connection management and initialization
-5. **Frontend Interface** (`public/`) - Client-side user interface
-
-### Design Patterns
-
-- **Model-View-Controller (MVC)**: Separation of concerns between data, presentation, and logic
-- **RESTful API**: HTTP methods mapping to CRUD operations
-- **Middleware Pipeline**: Request/response processing chain
-- **Repository Pattern**: Data access abstraction
-- **JWT Authentication**: Stateless token-based security
-
-## Development Features
-
-### Security Implementation
-- **Password Hashing**: BCrypt with configurable salt rounds
-- **JWT Authentication**: Secure token-based authentication
-- **Input Validation**: Server-side request validation
-- **SQL Injection Prevention**: Parameterized queries
-- **Rate Limiting**: Request throttling for API protection
-- **Security Headers**: Helmet.js security middleware
-
-### Database Features
-- **Connection Pooling**: Optimized database connections
-- **Schema Management**: Automated table creation
-- **Transaction Support**: Database consistency
-- **Query Optimization**: Indexed columns for performance
-
-### Security Configuration
-- Update JWT secret in `config/default.js`
-- Configure rate limiting in `server.js`
-- Set appropriate CORS origins for production
-
-## Troubleshooting
-
-### Common Issues
-
-**Database Connection Failures:**
-- Verify MySQL service status
-- Confirm database credentials
-- Check network connectivity
-- Validate database existence
-
-**Authentication Errors:**
-- Verify JWT secret configuration
-- Check token expiration settings
-- Confirm user credentials
-- Review middleware configuration
-
-**Performance Issues:**
-- Monitor database connection pool
-- Check query execution times
-- Review server resource usage
-- Optimize database indexes
-
-## Testing
-
-### Manual Testing
-Use the provided test accounts for functionality verification:
-- Admin account for administrative features
-- User account for standard functionality
-
-### API Testing
-Use tools like Postman or curl for endpoint testing:
-```bash
-# Health check
-curl http://localhost:3000/api
-
-# User authentication
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
-```
-
-## Production Deployment
-
-### Pre-deployment Checklist
-- [ ] Update all default passwords
-- [ ] Configure environment variables
-- [ ] Set up SSL/TLS certificates
-- [ ] Configure reverse proxy (nginx/Apache)
-- [ ] Set up monitoring and logging
-- [ ] Configure backup procedures
-- [ ] Review security configurations
-
-## Support & Maintenance
-
-### Documentation
-- Code comments provide implementation details
-- API documentation available through endpoint inspection
-- Database schema documented in initialization files
-
-### Updates & Security
-- Regular dependency updates recommended
-- Security patches should be applied promptly
-- Monitor for vulnerability disclosures
+* `POST /api/auth/register` - Create a new user account.
+* `POST /api/auth/login` - Authenticate and receive JWT.
+* `GET /api/auth/me` - Retrieve current user context (Protected).
+* `GET /api/users` - List all users (Admin only).
+* `DELETE /api/users/:id` - Remove a user (Admin only).
 
 ## License
 
-This project is intended for educational and reference purposes. Review and adapt the code according to your specific requirements and security standards.
+This project is licensed under the MIT License.
