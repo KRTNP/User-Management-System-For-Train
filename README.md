@@ -93,7 +93,3 @@ The project follows a modified MVC (Model-View-Controller) pattern:
 * `GET /api/auth/me` - Retrieve current user context (Protected).
 * `GET /api/users` - List all users (Admin only).
 * `DELETE /api/users/:id` - Remove a user (Admin only).
-
-## License
-
-This project is licensed under the MIT License.
